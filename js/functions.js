@@ -1,6 +1,6 @@
 const checkStringLength = (str, maxLength) => str.length <= maxLength;
 
-checkStringLength('проверяемая строка', 20)
+checkStringLength('проверяемая строка', 20);
 
 const isPalindrome = (str) => {
   const normalized = str.replaceAll(' ', '').toLowerCase();
@@ -13,7 +13,7 @@ const isPalindrome = (str) => {
   return reversed === normalized;
 };
 
-isPalindrome('топот')
+isPalindrome('топот');
 
 const extractDigits = (value) => {
   const str = value.toString();
@@ -31,4 +31,4 @@ const extractDigits = (value) => {
   return parseInt(digits, 10);
 };
 
-extractDigits('2023 год')
+extractDigits('2023 год');
