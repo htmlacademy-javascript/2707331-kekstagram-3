@@ -1,3 +1,5 @@
+import { openBigPicture } from './big-picture.js';
+
 const pictureTemplate = document
   .querySelector('#picture')
   .content
@@ -5,13 +7,20 @@ const pictureTemplate = document
 
 const picturesContainer = document.querySelector('.pictures');
 
-const createPicture = ({ url, description, likes, comments }) => {
+const createPicture = (picture) => {
   const pictureElement = pictureTemplate.cloneNode(true);
 
-  pictureElement.querySelector('.picture__img').src = url;
-  pictureElement.querySelector('.picture__img').alt = description;
-  pictureElement.querySelector('.picture__likes').textContent = likes;
-  pictureElement.querySelector('.picture__comments').textContent = comments.length;
+  const pictureImage = pictureElement.querySelector('.picture__img');
+
+  pictureImage.src = picture.url;
+  pictureImage.alt = picture.description;
+
+  pictureElement.querySelector('.picture__likes').textContent = picture.likes;
+  pictureElement.querySelector('.picture__comments').textContent = picture.comments.length;
+
+  pictureElement.addEventListener('click', () => {
+    openBigPicture(picture);
+  });
 
   return pictureElement;
 };
