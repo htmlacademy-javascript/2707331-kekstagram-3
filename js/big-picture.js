@@ -1,3 +1,5 @@
+const COMMENTS_STEP = 5;
+
 const bigPicture = document.querySelector('.big-picture');
 const bigPictureImage = bigPicture.querySelector('.big-picture__img img');
 const likesCount = bigPicture.querySelector('.likes-count');
@@ -7,14 +9,21 @@ const commentsContainer = bigPicture.querySelector('.social__comments');
 const caption = bigPicture.querySelector('.social__caption');
 const commentItem = bigPicture.querySelector('.social__comment');
 
+const commentsLoader = bigPicture.querySelector('.comments-loader');
+
 const closeButton = bigPicture.querySelector('.big-picture__cancel');
 
-const renderComments = (comments) => {
+let comments = [];
+let shownComments = 0;
+
+const renderComments = () => {
   commentsContainer.innerHTML = '';
 
   const fragment = document.createDocumentFragment();
 
-  comments.forEach(({ avatar, name, message }) => {
+  const commentsToShow = comments.slice(0, shownComments);
+
+  commentsToShow.forEach(({ avatar, name, message }) => {
     const comment = commentItem.cloneNode(true);
 
     const commentAvatar = comment.querySelector('.social__picture');
@@ -28,6 +37,19 @@ const renderComments = (comments) => {
   });
 
   commentsContainer.append(fragment);
+
+  shownCommentsCount.textContent = shownComments;
+};
+
+const onCommentsLoaderClick = () => {
+  shownComments += COMMENTS_STEP;
+
+  if (shownComments >= comments.length) {
+    shownComments = comments.length;
+    commentsLoader.classList.add('hidden');
+  }
+
+  renderComments();
 };
 
 const closeBigPicture = () => {
@@ -55,21 +77,27 @@ const openBigPicture = (picture) => {
 
   likesCount.textContent = picture.likes;
 
-  shownCommentsCount.textContent = picture.comments.length;
   totalCommentsCount.textContent = picture.comments.length;
+
+  comments = picture.comments;
+  shownComments = Math.min(COMMENTS_STEP, comments.length);
 
   caption.textContent = picture.description;
 
-  renderComments(picture.comments);
+  renderComments();
 
   bigPicture
     .querySelector('.social__comment-count')
-    .classList.add('hidden');
+    .classList.remove('hidden');
 
-  bigPicture
-    .querySelector('.comments-loader')
-    .classList.add('hidden');
+  commentsLoader.classList.remove('hidden');
+
+  if (shownComments >= comments.length) {
+    commentsLoader.classList.add('hidden');
+  }
 };
+
+commentsLoader.addEventListener('click', onCommentsLoaderClick);
 
 closeButton.addEventListener('click', closeBigPicture);
 
