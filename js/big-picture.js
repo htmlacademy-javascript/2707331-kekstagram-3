@@ -5,6 +5,7 @@ const shownCommentsCount = bigPicture.querySelector('.social__comment-shown-coun
 const totalCommentsCount = bigPicture.querySelector('.social__comment-total-count');
 const commentsContainer = bigPicture.querySelector('.social__comments');
 const caption = bigPicture.querySelector('.social__caption');
+const commentItem = bigPicture.querySelector('.social__comment');
 
 const closeButton = bigPicture.querySelector('.big-picture__cancel');
 
@@ -14,19 +15,14 @@ const renderComments = (comments) => {
   const fragment = document.createDocumentFragment();
 
   comments.forEach(({ avatar, name, message }) => {
-    const comment = document.createElement('li');
+    const comment = commentItem.cloneNode(true);
 
-    comment.classList.add('social__comment');
+    const commentAvatar = comment.querySelector('.social__picture');
+    const commentText = comment.querySelector('.social__text');
 
-    comment.innerHTML = `
-      <img
-        class="social__picture"
-        src="${avatar}"
-        alt="${name}"
-        width="35"
-        height="35">
-      <p class="social__text">${message}</p>
-    `;
+    commentAvatar.src = avatar;
+    commentAvatar.alt = name;
+    commentText.textContent = message;
 
     fragment.append(comment);
   });
@@ -34,12 +30,29 @@ const renderComments = (comments) => {
   commentsContainer.append(fragment);
 };
 
+const closeBigPicture = () => {
+  bigPicture.classList.add('hidden');
+
+  document.body.classList.remove('modal-open');
+
+  document.removeEventListener('keydown', onDocumentEscapeKeydown);
+};
+
+function onDocumentEscapeKeydown(evt) {
+  if (evt.key === 'Escape' && !bigPicture.classList.contains('hidden')) {
+    closeBigPicture();
+  }
+}
+
 const openBigPicture = (picture) => {
+  document.addEventListener('keydown', onDocumentEscapeKeydown);
+
   bigPicture.classList.remove('hidden');
 
   document.body.classList.add('modal-open');
 
   bigPictureImage.src = picture.url;
+
   likesCount.textContent = picture.likes;
 
   shownCommentsCount.textContent = picture.comments.length;
@@ -58,18 +71,6 @@ const openBigPicture = (picture) => {
     .classList.add('hidden');
 };
 
-const closeBigPicture = () => {
-  bigPicture.classList.add('hidden');
-
-  document.body.classList.remove('modal-open');
-};
-
 closeButton.addEventListener('click', closeBigPicture);
-
-document.addEventListener('keydown', (evt) => {
-  if (evt.key === 'Escape' && !bigPicture.classList.contains('hidden')) {
-    closeBigPicture();
-  }
-});
 
 export { openBigPicture };
