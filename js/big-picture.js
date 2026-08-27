@@ -1,3 +1,5 @@
+const COMMENTS_STEP = 5;
+
 const bigPicture = document.querySelector('.big-picture');
 const bigPictureImage = bigPicture.querySelector('.big-picture__img img');
 const likesCount = bigPicture.querySelector('.likes-count');
@@ -5,71 +7,98 @@ const shownCommentsCount = bigPicture.querySelector('.social__comment-shown-coun
 const totalCommentsCount = bigPicture.querySelector('.social__comment-total-count');
 const commentsContainer = bigPicture.querySelector('.social__comments');
 const caption = bigPicture.querySelector('.social__caption');
+const commentItem = bigPicture.querySelector('.social__comment');
+
+const commentsLoader = bigPicture.querySelector('.comments-loader');
 
 const closeButton = bigPicture.querySelector('.big-picture__cancel');
 
-const renderComments = (comments) => {
+let comments = [];
+let shownComments = 0;
+
+const renderComments = () => {
   commentsContainer.innerHTML = '';
 
   const fragment = document.createDocumentFragment();
 
-  comments.forEach(({ avatar, name, message }) => {
-    const comment = document.createElement('li');
+  const commentsToShow = comments.slice(0, shownComments);
 
-    comment.classList.add('social__comment');
+  commentsToShow.forEach(({ avatar, name, message }) => {
+    const comment = commentItem.cloneNode(true);
 
-    comment.innerHTML = `
-      <img
-        class="social__picture"
-        src="${avatar}"
-        alt="${name}"
-        width="35"
-        height="35">
-      <p class="social__text">${message}</p>
-    `;
+    const commentAvatar = comment.querySelector('.social__picture');
+    const commentText = comment.querySelector('.social__text');
+
+    commentAvatar.src = avatar;
+    commentAvatar.alt = name;
+    commentText.textContent = message;
 
     fragment.append(comment);
   });
 
   commentsContainer.append(fragment);
+
+  shownCommentsCount.textContent = shownComments;
 };
 
-const openBigPicture = (picture) => {
-  bigPicture.classList.remove('hidden');
+const onCommentsLoaderClick = () => {
+  shownComments += COMMENTS_STEP;
 
-  document.body.classList.add('modal-open');
+  if (shownComments >= comments.length) {
+    shownComments = comments.length;
+    commentsLoader.classList.add('hidden');
+  }
 
-  bigPictureImage.src = picture.url;
-  likesCount.textContent = picture.likes;
-
-  shownCommentsCount.textContent = picture.comments.length;
-  totalCommentsCount.textContent = picture.comments.length;
-
-  caption.textContent = picture.description;
-
-  renderComments(picture.comments);
-
-  bigPicture
-    .querySelector('.social__comment-count')
-    .classList.add('hidden');
-
-  bigPicture
-    .querySelector('.comments-loader')
-    .classList.add('hidden');
+  renderComments();
 };
 
 const closeBigPicture = () => {
   bigPicture.classList.add('hidden');
 
   document.body.classList.remove('modal-open');
+
+  document.removeEventListener('keydown', onDocumentEscapeKeydown);
 };
 
-closeButton.addEventListener('click', closeBigPicture);
-
-document.addEventListener('keydown', (evt) => {
+function onDocumentEscapeKeydown(evt) {
   if (evt.key === 'Escape' && !bigPicture.classList.contains('hidden')) {
     closeBigPicture();
   }
-});
+}
+
+const openBigPicture = (picture) => {
+  document.addEventListener('keydown', onDocumentEscapeKeydown);
+
+  bigPicture.classList.remove('hidden');
+
+  document.body.classList.add('modal-open');
+
+  bigPictureImage.src = picture.url;
+
+  likesCount.textContent = picture.likes;
+
+  totalCommentsCount.textContent = picture.comments.length;
+
+  comments = picture.comments;
+  shownComments = Math.min(COMMENTS_STEP, comments.length);
+
+  caption.textContent = picture.description;
+
+  renderComments();
+
+  bigPicture
+    .querySelector('.social__comment-count')
+    .classList.remove('hidden');
+
+  commentsLoader.classList.remove('hidden');
+
+  if (shownComments >= comments.length) {
+    commentsLoader.classList.add('hidden');
+  }
+};
+
+commentsLoader.addEventListener('click', onCommentsLoaderClick);
+
+closeButton.addEventListener('click', closeBigPicture);
 
 export { openBigPicture };
