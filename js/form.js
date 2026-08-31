@@ -1,6 +1,10 @@
 const MAX_HASHTAGS = 5;
 const MAX_COMMENT_LENGTH = 140;
 
+const MIN_SCALE = 25;
+const MAX_SCALE = 100;
+const SCALE_STEP = 25;
+
 const uploadForm = document.querySelector('.img-upload__form');
 const uploadInput = document.querySelector('.img-upload__input');
 const uploadOverlay = document.querySelector('.img-upload__overlay');
@@ -8,6 +12,11 @@ const closeButton = document.querySelector('.img-upload__cancel');
 
 const hashtagsInput = document.querySelector('.text__hashtags');
 const descriptionInput = document.querySelector('.text__description');
+
+const scaleSmallerButton = document.querySelector('.scale__control--smaller');
+const scaleBiggerButton = document.querySelector('.scale__control--bigger');
+const scaleValue = document.querySelector('.scale__control--value');
+const previewImage = document.querySelector('.img-upload__preview img');
 
 const pristine = new Pristine(uploadForm, {
   classTo: 'img-upload__field-wrapper',
@@ -47,6 +56,28 @@ const onUploadInputChange = () => {
 
 uploadInput.addEventListener('change', onUploadInputChange);
 closeButton.addEventListener('click', closeUploadForm);
+
+const onScaleChange = (value) => {
+  scaleValue.value = `${value}%`;
+  previewImage.style.transform = `scale(${value / 100})`;
+};
+
+const onScaleSmallerButtonClick = () => {
+  const currentScale = parseInt(scaleValue.value, 10);
+  const newScale = Math.max(currentScale - SCALE_STEP, MIN_SCALE);
+
+  onScaleChange(newScale);
+};
+
+const onScaleBiggerButtonClick = () => {
+  const currentScale = parseInt(scaleValue.value, 10);
+  const newScale = Math.min(currentScale + SCALE_STEP, MAX_SCALE);
+
+  onScaleChange(newScale);
+};
+
+scaleSmallerButton.addEventListener('click', onScaleSmallerButtonClick);
+scaleBiggerButton.addEventListener('click', onScaleBiggerButtonClick);
 
 const isValidHashtag = (hashtag) => /^#[a-zа-яё0-9]{1,19}$/i.test(hashtag);
 
