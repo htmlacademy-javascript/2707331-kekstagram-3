@@ -1,4 +1,5 @@
 import './form.js';
+import './effects.js';
 import { renderPictures } from './pictures.js';
 import { createPhotos } from './photos.js';
 
