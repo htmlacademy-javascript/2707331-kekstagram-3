@@ -10,36 +10,42 @@ const EFFECTS = {
     max: 0,
     step: 0,
     filter: null,
+    unit: ''
   },
   chrome: {
     min: 0,
     max: 1,
     step: 0.1,
     filter: 'grayscale',
+    unit: ''
   },
   sepia: {
     min: 0,
     max: 1,
     step: 0.1,
     filter: 'sepia',
+    unit: ''
   },
   marvin: {
     min: 0,
     max: 100,
     step: 1,
     filter: 'invert',
+    unit: '%'
   },
   phobos: {
     min: 0,
     max: 3,
     step: 0.1,
     filter: 'blur',
+    unit: 'px'
   },
   heat: {
     min: 1,
     max: 3,
     step: 0.1,
     filter: 'brightness',
+    unit: ''
   },
 };
 
@@ -61,17 +67,7 @@ const applyEffect = (effect, value) => {
     return;
   }
 
-  let filterValue = value;
-
-  if (effect.filter === 'invert') {
-    filterValue = `${value}%`;
-  }
-
-  if (effect.filter === 'blur') {
-    filterValue = `${value}px`;
-  }
-
-  previewImage.style.filter = `${effect.filter}(${filterValue})`;
+  previewImage.style.filter = `${effect.filter}(${value}${effect.unit})`;
 };
 
 effectLevelSlider.noUiSlider.on('update', (values) => {
