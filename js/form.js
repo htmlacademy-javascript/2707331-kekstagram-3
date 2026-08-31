@@ -1,3 +1,9 @@
+import { resetScale } from './scale.js';
+import { resetEffect } from './effects.js';
+
+const MAX_HASHTAGS = 5;
+const MAX_COMMENT_LENGTH = 140;
+
 const uploadForm = document.querySelector('.img-upload__form');
 const uploadInput = document.querySelector('.img-upload__input');
 const uploadOverlay = document.querySelector('.img-upload__overlay');
@@ -6,19 +12,21 @@ const closeButton = document.querySelector('.img-upload__cancel');
 const hashtagsInput = document.querySelector('.text__hashtags');
 const descriptionInput = document.querySelector('.text__description');
 
-const MAX_HASHTAGS = 5;
-const MAX_HASHTAG_LENGTH = 20;
-const MAX_COMMENT_LENGTH = 140;
-
-const onUploadInputChange = () => {
-  uploadOverlay.classList.remove('hidden');
-  document.body.classList.add('modal-open');
-};
+const pristine = new Pristine(uploadForm, {
+  classTo: 'img-upload__field-wrapper',
+  errorClass: 'img-upload__field-wrapper--error',
+  errorTextParent: 'img-upload__field-wrapper',
+  errorTextTag: 'div',
+  errorTextClass: 'pristine-error'
+});
 
 const closeUploadForm = () => {
   uploadOverlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
   uploadForm.reset();
+  pristine.reset();
+  resetScale();
+  resetEffect();
 };
 
 const onDocumentKeydown = (evt) => {
@@ -36,20 +44,24 @@ const onDocumentKeydown = (evt) => {
   }
 };
 
+const onUploadInputChange = () => {
+  uploadOverlay.classList.remove('hidden');
+  document.body.classList.add('modal-open');
+  document.addEventListener('keydown', onDocumentKeydown);
+};
+
 uploadInput.addEventListener('change', onUploadInputChange);
 closeButton.addEventListener('click', closeUploadForm);
-document.addEventListener('keydown', onDocumentKeydown);
 
-const isValidHashtag = (hashtag) => {
-  if (!hashtag.startsWith('#')) {
-    return false;
+const isValidHashtag = (hashtag) => /^#[a-zа-яё0-9]{1,19}$/i.test(hashtag);
+
+const getHashtags = (value) => {
+  if (!value.trim()) {
+    return true;
   }
 
-  if (hashtag.length === 1 || hashtag.length > MAX_HASHTAG_LENGTH) {
-    return false;
-  }
-
-  return /^#[a-zа-яё0-9]+$/i.test(hashtag);
+  const hashtags = value.trim().split(/\s+/);
+  return hashtags;
 };
 
 const validateHashtagsFormat = (value) => {
@@ -57,7 +69,7 @@ const validateHashtagsFormat = (value) => {
     return true;
   }
 
-  const hashtags = value.trim().split(/\s+/);
+  const hashtags = getHashtags(value);
 
   return hashtags.every((hashtag) => isValidHashtag(hashtag));
 };
@@ -67,7 +79,7 @@ const validateHashtagsCount = (value) => {
     return true;
   }
 
-  const hashtags = value.trim().split(/\s+/);
+  const hashtags = getHashtags(value);
 
   return hashtags.length <= MAX_HASHTAGS;
 };
@@ -77,21 +89,13 @@ const validateHashtagsUnique = (value) => {
     return true;
   }
 
-  const hashtags = value.trim().split(/\s+/);
+  const hashtags = getHashtags(value);
   const normalizedHashtags = hashtags.map((hashtag) => hashtag.toLowerCase());
 
   return new Set(normalizedHashtags).size === normalizedHashtags.length;
 };
 
 const validateDescription = (value) => value.length <= MAX_COMMENT_LENGTH;
-
-const pristine = new Pristine(uploadForm, {
-  classTo: 'img-upload__field-wrapper',
-  errorClass: 'img-upload__field-wrapper--error',
-  errorTextParent: 'img-upload__field-wrapper',
-  errorTextTag: 'div',
-  errorTextClass: 'pristine-error'
-});
 
 pristine.addValidator(
   hashtagsInput,
