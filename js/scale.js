@@ -12,6 +12,10 @@ const onScaleChange = (value) => {
   previewImage.style.transform = `scale(${value / 100})`;
 };
 
+const resetScale = () => {
+  onScaleChange(MAX_SCALE);
+};
+
 const onScaleSmallerButtonClick = () => {
   const currentScale = parseInt(scaleValue.value, 10);
   const newScale = Math.max(currentScale - SCALE_STEP, MIN_SCALE);
@@ -28,3 +32,5 @@ const onScaleBiggerButtonClick = () => {
 
 scaleSmallerButton.addEventListener('click', onScaleSmallerButtonClick);
 scaleBiggerButton.addEventListener('click', onScaleBiggerButtonClick);
+
+export { resetScale };

@@ -1,3 +1,5 @@
+import { resetScale } from './scale.js';
+
 const MAX_HASHTAGS = 5;
 const MAX_COMMENT_LENGTH = 140;
 
@@ -22,6 +24,7 @@ const closeUploadForm = () => {
   document.body.classList.remove('modal-open');
   uploadForm.reset();
   pristine.reset();
+  resetScale();
 };
 
 const onDocumentKeydown = (evt) => {
