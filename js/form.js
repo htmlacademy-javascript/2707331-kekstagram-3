@@ -1,4 +1,5 @@
 import { resetScale } from './scale.js';
+import { resetEffect } from './effects.js';
 
 const MAX_HASHTAGS = 5;
 const MAX_COMMENT_LENGTH = 140;
@@ -25,6 +26,7 @@ const closeUploadForm = () => {
   uploadForm.reset();
   pristine.reset();
   resetScale();
+  resetEffect();
 };
 
 const onDocumentKeydown = (evt) => {

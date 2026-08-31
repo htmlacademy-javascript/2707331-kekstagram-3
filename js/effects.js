@@ -113,3 +113,21 @@ const onEffectChange = (evt) => {
 effects.forEach((effect) => {
   effect.addEventListener('change', onEffectChange);
 });
+
+const resetEffect = () => {
+  document.querySelector('#effect-none').checked = true;
+  effectLevel.classList.add('hidden');
+  effectLevelValue.value = '';
+  previewImage.style.removeProperty('filter');
+
+  effectLevelSlider.noUiSlider.updateOptions({
+    range: {
+      min: 0,
+      max: 1,
+    },
+    start: 1,
+    step: 0.1,
+  });
+};
+
+export { resetEffect };
