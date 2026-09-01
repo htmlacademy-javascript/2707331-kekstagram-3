@@ -9,6 +9,7 @@ const uploadForm = document.querySelector('.img-upload__form');
 const uploadInput = document.querySelector('.img-upload__input');
 const uploadOverlay = document.querySelector('.img-upload__overlay');
 const closeButton = document.querySelector('.img-upload__cancel');
+const submitButton = uploadForm.querySelector('.img-upload__submit');
 
 const hashtagsInput = document.querySelector('.text__hashtags');
 const descriptionInput = document.querySelector('.text__description');
@@ -131,5 +132,6 @@ uploadForm.addEventListener('submit', (evt) => {
 
   const formData = new FormData(uploadForm);
 
+  submitButton.disabled = true;
   sendData(formData);
 });
