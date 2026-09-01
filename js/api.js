@@ -1,4 +1,5 @@
 const GET_DATA_URL = 'https://32.javascript.htmlacademy.pro/kekstagram/data';
+const SEND_DATA_URL = 'https://32.javascript.htmlacademy.pro/kekstagram';
 
 const getData = () =>
   fetch(GET_DATA_URL)
@@ -10,4 +11,17 @@ const getData = () =>
       return response.json();
     });
 
-export { getData };
+const sendData = (data) =>
+  fetch(SEND_DATA_URL, {
+    method: 'POST',
+    body: data,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error();
+      }
+
+      return response;
+    });
+
+export { getData, sendData };
