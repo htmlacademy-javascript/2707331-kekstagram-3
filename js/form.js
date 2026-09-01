@@ -1,5 +1,6 @@
 import { resetScale } from './scale.js';
 import { resetEffect } from './effects.js';
+import { sendData } from './api.js';
 
 const MAX_HASHTAGS = 5;
 const MAX_COMMENT_LENGTH = 140;
@@ -122,7 +123,13 @@ pristine.addValidator(
 );
 
 uploadForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+
   if (!pristine.validate()) {
-    evt.preventDefault();
+    return;
   }
+
+  const formData = new FormData(uploadForm);
+
+  sendData(formData);
 });
