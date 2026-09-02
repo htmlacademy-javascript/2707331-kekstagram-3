@@ -19,6 +19,11 @@ const successMessageTemplate = document
   .content
   .querySelector('.success');
 
+const errorMessageTemplate = document
+  .querySelector('#error')
+  .content
+  .querySelector('.error');
+
 const pristine = new Pristine(uploadForm, {
   classTo: 'img-upload__field-wrapper',
   errorClass: 'img-upload__field-wrapper--error',
@@ -36,8 +41,14 @@ const closeUploadForm = () => {
   resetEffect();
 };
 
+let isMessageShown = false;
+
 const onDocumentKeydown = (evt) => {
   if (evt.key === 'Escape') {
+    if (isMessageShown) {
+      return;
+    }
+
     const activeElement = document.activeElement;
 
     if (
@@ -128,30 +139,39 @@ pristine.addValidator(
   'Комментарий не может быть длиннее 140 символов'
 );
 
-const showSuccessMessage = () => {
-  const successMessage = successMessageTemplate.cloneNode(true);
-  const successButton = successMessage.querySelector('.success__button');
+const showMessage = (messageTemplate, buttonSelector) => {
+  const message = messageTemplate.cloneNode(true);
+  const messageButton = message.querySelector(buttonSelector);
 
-  successButton.addEventListener('click', () => {
-    successMessage.remove();
-  });
+  isMessageShown = true;
 
-  successMessage.addEventListener('click', (evt) => {
-    if (evt.target === successMessage) {
-      successMessage.remove();
-    }
-  });
-
-  const onSuccessMessageKeydown = (evt) => {
+  const onMessageKeydown = (evt) => {
     if (evt.key === 'Escape') {
-      successMessage.remove();
-      document.removeEventListener('keydown', onSuccessMessageKeydown);
+      message.remove();
+      isMessageShown = false;
+      document.removeEventListener('keydown', onMessageKeydown);
     }
   };
 
-  document.addEventListener('keydown', onSuccessMessageKeydown);
+  const onMessageButtonClick = () => {
+    message.remove();
+    isMessageShown = false;
+    document.removeEventListener('keydown', onMessageKeydown);
+  };
 
-  document.body.append(successMessage);
+  const onMessageClick = (evt) => {
+    if (evt.target === message) {
+      message.remove();
+      isMessageShown = false;
+      document.removeEventListener('keydown', onMessageKeydown);
+    }
+  };
+
+  messageButton.addEventListener('click', onMessageButtonClick);
+  message.addEventListener('click', onMessageClick);
+  document.addEventListener('keydown', onMessageKeydown);
+
+  document.body.append(message);
 };
 
 uploadForm.addEventListener('submit', (evt) => {
@@ -168,6 +188,10 @@ uploadForm.addEventListener('submit', (evt) => {
     .then(() => {
       submitButton.disabled = false;
       closeUploadForm();
-      showSuccessMessage();
+      showMessage(successMessageTemplate, '.success__button');
+    })
+    .catch(() => {
+      submitButton.disabled = false;
+      showMessage(errorMessageTemplate, '.error__button');
     });
 });
