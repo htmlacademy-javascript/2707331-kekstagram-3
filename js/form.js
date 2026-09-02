@@ -133,5 +133,9 @@ uploadForm.addEventListener('submit', (evt) => {
   const formData = new FormData(uploadForm);
 
   submitButton.disabled = true;
-  sendData(formData);
+  sendData(formData)
+    .then(() => {
+      submitButton.disabled = false;
+      closeUploadForm();
+    });
 });
