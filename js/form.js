@@ -14,6 +14,11 @@ const submitButton = uploadForm.querySelector('.img-upload__submit');
 const hashtagsInput = document.querySelector('.text__hashtags');
 const descriptionInput = document.querySelector('.text__description');
 
+const successMessageTemplate = document
+  .querySelector('#success')
+  .content
+  .querySelector('.success');
+
 const pristine = new Pristine(uploadForm, {
   classTo: 'img-upload__field-wrapper',
   errorClass: 'img-upload__field-wrapper--error',
@@ -123,6 +128,32 @@ pristine.addValidator(
   'Комментарий не может быть длиннее 140 символов'
 );
 
+const showSuccessMessage = () => {
+  const successMessage = successMessageTemplate.cloneNode(true);
+  const successButton = successMessage.querySelector('.success__button');
+
+  successButton.addEventListener('click', () => {
+    successMessage.remove();
+  });
+
+  successMessage.addEventListener('click', (evt) => {
+    if (evt.target === successMessage) {
+      successMessage.remove();
+    }
+  });
+
+  const onSuccessMessageKeydown = (evt) => {
+    if (evt.key === 'Escape') {
+      successMessage.remove();
+      document.removeEventListener('keydown', onSuccessMessageKeydown);
+    }
+  };
+
+  document.addEventListener('keydown', onSuccessMessageKeydown);
+
+  document.body.append(successMessage);
+};
+
 uploadForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
@@ -137,5 +168,6 @@ uploadForm.addEventListener('submit', (evt) => {
     .then(() => {
       submitButton.disabled = false;
       closeUploadForm();
+      showSuccessMessage();
     });
 });
