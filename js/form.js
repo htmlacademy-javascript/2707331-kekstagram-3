@@ -145,27 +145,30 @@ const showMessage = (messageTemplate, buttonSelector) => {
 
   isMessageShown = true;
 
-  const onMessageKeydown = (evt) => {
+  function onMessageKeydown(evt) {
     if (evt.key === 'Escape') {
-      message.remove();
-      isMessageShown = false;
-      document.removeEventListener('keydown', onMessageKeydown);
+      closeMessage();
     }
-  };
+  }
 
-  const onMessageButtonClick = () => {
+  function onMessageButtonClick() {
+    closeMessage();
+  }
+
+  function onMessageClick(evt) {
+    if (evt.target === message) {
+      closeMessage();
+    }
+  }
+
+  function closeMessage() {
     message.remove();
     isMessageShown = false;
-    document.removeEventListener('keydown', onMessageKeydown);
-  };
 
-  const onMessageClick = (evt) => {
-    if (evt.target === message) {
-      message.remove();
-      isMessageShown = false;
-      document.removeEventListener('keydown', onMessageKeydown);
-    }
-  };
+    messageButton.removeEventListener('click', onMessageButtonClick);
+    message.removeEventListener('click', onMessageClick);
+    document.removeEventListener('keydown', onMessageKeydown);
+  }
 
   messageButton.addEventListener('click', onMessageButtonClick);
   message.addEventListener('click', onMessageClick);
