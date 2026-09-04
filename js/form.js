@@ -10,6 +10,7 @@ const uploadInput = document.querySelector('.img-upload__input');
 const uploadOverlay = document.querySelector('.img-upload__overlay');
 const closeButton = document.querySelector('.img-upload__cancel');
 const submitButton = uploadForm.querySelector('.img-upload__submit');
+const previewImage = document.querySelector('.img-upload__preview img');
 
 const hashtagsInput = document.querySelector('.text__hashtags');
 const descriptionInput = document.querySelector('.text__description');
@@ -63,6 +64,12 @@ const onDocumentKeydown = (evt) => {
 };
 
 const onUploadInputChange = () => {
+  const file = uploadInput.files[0];
+
+  if (file) {
+    previewImage.src = URL.createObjectURL(file);
+  }
+
   uploadOverlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
   document.addEventListener('keydown', onDocumentKeydown);
