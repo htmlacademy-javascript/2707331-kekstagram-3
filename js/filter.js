@@ -1,4 +1,5 @@
 import { renderPictures, clearPictures } from './pictures.js';
+import { debounce } from './util.js';
 
 const RANDOM_PHOTOS_COUNT = 10;
 
@@ -24,23 +25,23 @@ const getDiscussedPhotos = (photos) => [...photos].sort(
   (a, b) => b.comments.length - a.comments.length
 );
 
+const renderFilteredPictures = debounce((pictures) => {
+  clearPictures();
+  renderPictures(pictures);
+});
+
 const initFilters = (photos) => {
   defaultFilterButton.addEventListener('click', () => {
     setActiveFilter(defaultFilterButton);
-    clearPictures();
-    renderPictures(photos);
+    renderFilteredPictures(photos);
   });
-
   randomFilterButton.addEventListener('click', () => {
     setActiveFilter(randomFilterButton);
-    clearPictures();
-    renderPictures(getRandomPhotos(photos));
+    renderFilteredPictures(getRandomPhotos(photos));
   });
-
   discussedFilterButton.addEventListener('click', () => {
     setActiveFilter(discussedFilterButton);
-    clearPictures();
-    renderPictures(getDiscussedPhotos(photos));
+    renderFilteredPictures(getDiscussedPhotos(photos));
   });
 };
 
