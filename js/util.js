@@ -3,3 +3,15 @@ export const getRandomInt = (min, max) =>
 
 export const getRandomArrayElement = (elements) =>
   elements[getRandomInt(0, elements.length - 1)];
+
+export const debounce = (callback, timeoutDelay = 500) => {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => {
+      callback(...rest);
+    }, timeoutDelay);
+  };
+};
